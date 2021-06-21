@@ -146,9 +146,6 @@ while running:
         elif event.type == pygame.MOUSEBUTTONDOWN:
             mouse = pygame.mouse.get_pos()
             
-            while pygame.MOUSEBUTTONDOWN:
-                print(mouse)
-             
             if greAll(mouse, (152, 2)) and lessAll(mouse, (152 + 64, 2 + 64)):
                 board[3][3] = 16
             else:
