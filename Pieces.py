@@ -4,6 +4,7 @@ class Pawn:
     def __init__(self, position, isP):
         self.pos = position
         self.isPlayer = isP
+        self.clicked = False
         self.firstMove = True
         self.possibleMoves = []
         self.FindPossibleMoves()
@@ -21,7 +22,7 @@ class Pawn:
             self.possibleMoves.append([self.pos[0] - 1, self.pos[1]])
         else:
             self.possibleMoves.append([self.pos[0] + 1, self.pos[1]])
-        
+            
 class Rook:
     value = 2
     pos = [0, 0]
@@ -29,6 +30,8 @@ class Rook:
 
     def __init__(self, position):
         self.pos = position
+        self.clicked = False
+        self.possibleMoves = []
         self.FindPossibleMoves()
 
     def FindPossibleMoves(self):

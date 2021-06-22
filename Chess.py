@@ -32,9 +32,10 @@ blackKing = pygame.image.load('source/blackking.png')
 def PlaceBoard():
     window.blit(chessBoard, (150, 0))
 
-whitePieces = []
-blackPieces = []
-
+playerPieces = []
+botPieces = []
+pieceClicked = False
+thePiece = []
 # Initialize the board
 # 1 - Pawn
 # 2 - Rook
@@ -48,13 +49,13 @@ def InitializeBoard(board):
     board = np.zeros((8, 8), dtype= np.int16)
     #Rooks
     board[0][0] = 12
-    blackPieces.append(pc.Rook([0, 0]))
+    botPieces.append(pc.Rook([0, 0]))
     board[0][7] = 12
-    blackPieces.append(pc.Rook([0, 7]))
+    botPieces.append(pc.Rook([0, 7]))
     board[7][0] = 2
-    whitePieces.append(pc.Rook([7, 0]))
+    playerPieces.append(pc.Rook([7, 0]))
     board[7][7] = 2
-    whitePieces.append(pc.Rook([7, 7]))
+    playerPieces.append(pc.Rook([7, 7]))
     #Knights
     board[0][1] = 13
     board[0][6] = 13
@@ -74,19 +75,14 @@ def InitializeBoard(board):
     #Pawns
     for x in range(8):
         board[1][x] = 11
-        blackPieces.append(pc.Pawn([1, x], False))
+        botPieces.append(pc.Pawn([1, x], False))
         board[6][x] = 1
-        whitePieces.append(pc.Pawn([6, x], True))
+        playerPieces.append(pc.Pawn([6, x], True))
     
     return board
 board = InitializeBoard(board)
 
-board[3][4] = 1
-whitePieces.append(pc.Pawn([3, 3], True))
-whitePieces[10].firstMove = False
-whitePieces[10].FindPossibleMoves()
-
-for piece in whitePieces:
+for piece in playerPieces:
     print(piece)
     print(piece.pos)
     print(piece.possibleMoves)
@@ -135,6 +131,11 @@ def DrawBoard(board):
             x += 1
         y += 1
 
+# Draw possible moves
+def DrawPossibleMoves(piece):
+    for move in piece.possibleMoves:
+        pygame.draw.circle(window, (100, 100, 100, 255), [152 + move[1] * 64 + 32, 2 + move[0] * 64 + 32], 15)
+
 # The game loop
 running = True  
 while running:
@@ -147,14 +148,33 @@ while running:
             mouse = pygame.mouse.get_pos()
             
             if greAll(mouse, (152, 2)) and lessAll(mouse, (152 + 64, 2 + 64)):
-                board[3][3] = 16
-            else:
-                board[3][3] = 0
-    
+                board[0][0] = 16
+                print(playerPieces[0].pos[0])
+            
+            for piece in playerPieces:
+                if greAll(mouse, (152 + piece.pos[1] * 64, 2 + piece.pos[0] * 64)) and lessAll(mouse, (152 + piece.pos[1] * 64 + 64, 2 + piece.pos[0] * 64 + 64)):
+                    print(piece)
+                    print("Piece pos: ", piece.pos)
+                    print("Poss moves: ", piece.possibleMoves)
+                    if pieceClicked == False:
+                        piece.clicked = True
+                        pieceClicked = True
+                        thePiece.append(piece)
+                    else:
+                        if piece.clicked == True:
+                            piece.clicked == False
+                            pieceClicked = False
+                            thePiece.clear()
+
     #Change the background
     window.fill((0, 100, 0))
 
     # Update the display
     PlaceBoard()
     DrawBoard(board)
+    
+    #If a piece is clicked, display it's possible moves
+    if pieceClicked:
+        DrawPossibleMoves(thePiece[0])
+
     pygame.display.update()
