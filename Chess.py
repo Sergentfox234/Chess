@@ -87,7 +87,7 @@ for piece in playerPieces:
     print(piece.pos)
     print(piece.possibleMoves)
 
-#Faster way to force all numbers to be greater or less than
+# Faster way compare elements of tuples
 def lessAll(tuple1, tuple2):
     result = all(x < y for x, y in zip(tuple1, tuple2))
     return result
@@ -147,13 +147,24 @@ while running:
         elif event.type == pygame.MOUSEBUTTONDOWN:
             mouse = pygame.mouse.get_pos()
             
-            #If you click on your own piece, pick it up (show possible moves)
+            # If you click on your own piece, pick it up (show possible moves)
             for piece in playerPieces:
                 if greAll(mouse, (152 + piece.pos[1] * 64, 2 + piece.pos[0] * 64)) and lessAll(mouse, (152 + piece.pos[1] * 64 + 64, 2 + piece.pos[0] * 64 + 64)):
                     print(piece)
                     print("Piece pos: ", piece.pos)
                     print("Poss moves: ", piece.possibleMoves)
-                    if pieceClicked == False:
+
+                    # If the piece can't be clicked (has no moves), skip it
+                    # then if a piece can't be clicked and there was a piece in hand
+                    # then if a piece is not clicked and the piece has moves
+                    # then if this piece is in your hand or if you deselected
+                    if piece.possibleMoves.__len__() == 0 and thePiece.__len__() == 0:
+                        continue
+                    elif piece.possibleMoves.__len__() == 0:
+                        thePiece[0].clicked = False
+                        thePiece.clear()
+                        pieceClicked = False
+                    elif pieceClicked == False and piece.possibleMoves.__len__() > 0:
                         piece.clicked = True
                         pieceClicked = True
                         thePiece.append(piece)
@@ -162,13 +173,17 @@ while running:
                             piece.clicked == False
                             pieceClicked = False
                             thePiece.clear()
+                        else:
+                            thePiece[0].clicked = False
+                            thePiece.clear()
+                            pieceClicked = False
 
             #If you have already clicked on your piece, and you want to move it
             if pieceClicked:
                 for move in thePiece[0].possibleMoves:
                     if greAll(mouse, (152 + move[1] * 64, 2 + move[0] * 64)) and lessAll(mouse, (152 + move[1] * 64 + 64, 2 + move[0] * 64 + 64)):
                         board[thePiece[0].pos[0], thePiece[0].pos[1]] = 0
-                        thePiece[0].MoveTo(move)
+                        thePiece[0].MoveTo(move, board, botPieces)
                         board[move[0], move[1]] = piece.value
                         pieceClicked = False
                         thePiece.clear()
