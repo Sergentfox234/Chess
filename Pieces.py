@@ -9,6 +9,12 @@ class Pawn:
         self.possibleMoves = []
         self.FindPossibleMoves()
 
+    def MoveTo(self, position):
+        self.pos = position
+        self.clicked = False
+        self.firstMove = False
+        self.FindPossibleMoves()
+        
     def FindPossibleMoves(self):
         self.possibleMoves = []
 

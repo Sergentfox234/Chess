@@ -147,10 +147,7 @@ while running:
         elif event.type == pygame.MOUSEBUTTONDOWN:
             mouse = pygame.mouse.get_pos()
             
-            if greAll(mouse, (152, 2)) and lessAll(mouse, (152 + 64, 2 + 64)):
-                board[0][0] = 16
-                print(playerPieces[0].pos[0])
-            
+            #If you click on your own piece, pick it up (show possible moves)
             for piece in playerPieces:
                 if greAll(mouse, (152 + piece.pos[1] * 64, 2 + piece.pos[0] * 64)) and lessAll(mouse, (152 + piece.pos[1] * 64 + 64, 2 + piece.pos[0] * 64 + 64)):
                     print(piece)
@@ -165,6 +162,16 @@ while running:
                             piece.clicked == False
                             pieceClicked = False
                             thePiece.clear()
+
+            #If you have already clicked on your piece, and you want to move it
+            if pieceClicked:
+                for move in thePiece[0].possibleMoves:
+                    if greAll(mouse, (152 + move[1] * 64, 2 + move[0] * 64)) and lessAll(mouse, (152 + move[1] * 64 + 64, 2 + move[0] * 64 + 64)):
+                        board[thePiece[0].pos[0], thePiece[0].pos[1]] = 0
+                        thePiece[0].MoveTo(move)
+                        board[move[0], move[1]] = piece.value
+                        pieceClicked = False
+                        thePiece.clear()
 
     #Change the background
     window.fill((0, 100, 0))
