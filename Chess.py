@@ -15,6 +15,7 @@ pygame.display.set_icon(icon)
 
 # Setting images
 chessBoard = pygame.image.load('source/chessboard.png')
+debugButton = pygame.image.load('source/debugButton.png')
 whitePawn = pygame.image.load('source/whitepawn.png')
 blackPawn = pygame.image.load('source/blackpawn.png')
 whiteRook = pygame.image.load('source/whiterook.png')
@@ -28,9 +29,10 @@ blackQueen = pygame.image.load('source/blackqueen.png')
 whiteKing = pygame.image.load('source/whiteking.png')
 blackKing = pygame.image.load('source/blackking.png')
 
-# Setting the board's position
+# Setting the background
 def PlaceBoard():
     window.blit(chessBoard, (150, 0))
+    window.blit(debugButton, (0, 0))
 
 playerPieces = []
 botPieces = []
@@ -131,6 +133,11 @@ def DrawBoard(board):
             x += 1
         y += 1
 
+# Debugger
+def Debugger():
+    print(botPieces)
+    print(playerPieces)
+
 # Draw possible moves
 def DrawPossibleMoves(piece):
     for move in piece.possibleMoves:
@@ -147,6 +154,10 @@ while running:
         elif event.type == pygame.MOUSEBUTTONDOWN:
             mouse = pygame.mouse.get_pos()
             
+            # If you click on the debugger button
+            if greAll(mouse, (0, 0)) and lessAll(mouse, (64, 64)):
+                Debugger()
+
             # If you click on your own piece, pick it up (show possible moves)
             for piece in playerPieces:
                 if greAll(mouse, (152 + piece.pos[1] * 64, 2 + piece.pos[0] * 64)) and lessAll(mouse, (152 + piece.pos[1] * 64 + 64, 2 + piece.pos[0] * 64 + 64)):

@@ -20,7 +20,7 @@ class Pawn:
         self.FindFirstMoves()
 
     def MoveTo(self, position, board, oppositePieces):
-
+        # Check for enpessentability
         if self.isPlayer and self.firstMove and position[0] == self.pos[0] - 2:
             self.enPessentable = True
             print("enPessentable!!")
@@ -37,6 +37,11 @@ class Pawn:
         self.pos = position
         self.clicked = False
         self.firstMove = False
+        
+        for piece in oppositePieces:
+            if piece.pos == self.pos:
+                oppositePieces.remove(piece)
+
         self.FindPossibleMoves(board, oppositePieces)
 
     def FindFirstMoves(self):
@@ -70,15 +75,15 @@ class Pawn:
             self.possibleMoves.append([self.pos[0] + 1, self.pos[1]])
         
         # If the pawn can ATTACK to the left
-        if self.isPlayer and board[self.pos[0] - 1, self.pos[1] - 1] != 0:
+        if self.isPlayer and self.pos[1] > 0 and board[self.pos[0] - 1, self.pos[1] - 1] >= 10:
             self.possibleMoves.append([self.pos[0] - 1, self.pos[1] - 1])
 
         # If the pawn can ATTACK to the right 
-        if self.isPlayer and board[self.pos[0] - 1, self.pos[1] + 1] != 0:
+        if self.isPlayer and self.pos[1] < 7 and board[self.pos[0] - 1, self.pos[1] + 1] >= 10:
             self.possibleMoves.append([self.pos[0] - 1, self.pos[1] + 1])
 
         # If enpessent to the left
-        if self.isPlayer and board[self.pos[0], self.pos[1] - 1] == 1:
+        if self.isPlayer and board[self.pos[0], self.pos[1] - 1] == 11:
             for possPiece in oppositePieces:
                 if possPiece.pos == [self.pos[0], self.pos[1] - 1] and possPiece.enPessentable:
                     self.possibleMoves.append([self.pos[0] - 1, self.pos[1] - 1])
