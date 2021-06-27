@@ -1,14 +1,14 @@
 class Pawn:
     value = 1
 
-    def __init__(self, position, isP, board):
-        self.pos = position
-        self.isPlayer = isP
-        self.clicked = False
-        self.firstMove = True
-        self.enPessentable = False
-        self.possibleMoves = []
-        self.FindPossibleMoves(board)
+    #def __init__(self, position, isP, board):
+    #    self.pos = position
+    #    self.isPlayer = isP
+    #    self.clicked = False
+     #   self.firstMove = True
+     #   self.enPessentable = False
+     #   self.possibleMoves = []
+     #   self.FindPossibleMoves(board)
 
     def __init__(self, position, isP):
         self.pos = position
@@ -90,8 +90,6 @@ class Pawn:
             
 class Rook:
     value = 2
-    pos = [0, 0]
-    possibleMoves = []
 
     def __init__(self, position):
         self.pos = position
@@ -102,17 +100,50 @@ class Rook:
     def FindPossibleMoves(self):
         self.possibleMoves = []
 
-    def PrintMoves(self):
-        print(self.possibleMoves)
-
 class Knight:
     value = 3
+
+    def __init__(self, position):
+        self.pos = position
+        self.clicked = False
+        self.possibleMoves = []
+        self.FindPossibleMoves()
+    
+    def FindPossibleMoves(self):
+        self.possibleMoves = []
 
 class Bishop:
     value = 4
 
+    def __init__(self, position):
+        self.pos = position
+        self.clicked = False
+        self.possibleMoves = []
+        self.FindPossibleMoves()
+
+    def FindPossibleMoves(self):
+        self.possibleMoves = []
+
 class Queen:
     value = 5
 
+    def __init__(self, position):
+        self.pos = position
+        self.clicked = False
+        self.possibleMoves = []
+        self.FindPossibleMoves()
+    
+    def FindPossibleMoves(self):
+        self.possibleMoves = []
+
 class King:
     value = 6
+
+    def __init__(self, position):
+        self.pos = position
+        self.clicked = False
+        self.possibleMoves = []
+        self.FindPossibleMoves()
+    
+    def FindPossibleMoves(self):
+        self.possibleMoves = []

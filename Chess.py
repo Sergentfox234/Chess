@@ -38,6 +38,7 @@ playerPieces = []
 botPieces = []
 pieceClicked = False
 thePiece = []
+
 # Initialize the board
 # 1 - Pawn
 # 2 - Rook
@@ -60,20 +61,32 @@ def InitializeBoard(board):
     playerPieces.append(pc.Rook([7, 7]))
     #Knights
     board[0][1] = 13
+    botPieces.append(pc.Knight([0, 1]))
     board[0][6] = 13
+    botPieces.append(pc.Knight([0, 6]))
     board[7][1] = 3
+    playerPieces.append(pc.Knight([7, 1]))
     board[7][6] = 3
+    playerPieces.append(pc.Knight([7, 6]))
     #Bishops
     board[0][2] = 14
+    botPieces.append(pc.Bishop([0, 2]))
     board[0][5] = 14
+    botPieces.append(pc.Bishop([0, 5]))
     board[7][2] = 4
+    playerPieces.append(pc.Bishop([7, 2]))
     board[7][5] = 4
+    playerPieces.append(pc.Bishop([7, 5]))
     #Queens
     board[0][3] = 15
+    botPieces.append(pc.Queen([0, 3]))
     board[7][3] = 5
+    playerPieces.append(pc.Queen([7, 3]))
     #Kings
     board [0][4] = 16
+    botPieces.append(pc.King([0, 4]))
     board [7][4] = 6
+    playerPieces.append(pc.King([7, 4]))
     #Pawns
     for x in range(8):
         board[1][x] = 11
@@ -164,21 +177,22 @@ while running:
                     print(piece)
                     print("Piece pos: ", piece.pos)
                     print("Poss moves: ", piece.possibleMoves)
+                    piece.FindPossibleMoves(board, botPieces)
 
                     # If the piece can't be clicked (has no moves), skip it
-                    # then if a piece can't be clicked and there was a piece in hand
-                    # then if a piece is not clicked and the piece has moves
-                    # then if this piece is in your hand or if you deselected
                     if piece.possibleMoves.__len__() == 0 and thePiece.__len__() == 0:
                         continue
+                    # then if a piece can't be clicked and there was a piece in hand
                     elif piece.possibleMoves.__len__() == 0:
                         thePiece[0].clicked = False
                         thePiece.clear()
                         pieceClicked = False
+                    # then if a piece is not clicked and the piece has moves    
                     elif pieceClicked == False and piece.possibleMoves.__len__() > 0:
                         piece.clicked = True
                         pieceClicked = True
                         thePiece.append(piece)
+                    # then if this piece is in your hand or if you deselected    
                     else:
                         if piece.clicked == True:
                             piece.clicked == False
