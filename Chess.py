@@ -16,6 +16,7 @@ pygame.display.set_icon(icon)
 # Setting images
 chessBoard = pygame.image.load('source/chessboard.png')
 debugButton = pygame.image.load('source/debugButton.png')
+resetButton = pygame.image.load('source/resetButton.png')
 whitePawn = pygame.image.load('source/whitepawn.png')
 blackPawn = pygame.image.load('source/blackpawn.png')
 whiteRook = pygame.image.load('source/whiterook.png')
@@ -33,11 +34,13 @@ blackKing = pygame.image.load('source/blackking.png')
 def PlaceBoard():
     window.blit(chessBoard, (150, 0))
     window.blit(debugButton, (0, 0))
+    window.blit(resetButton, (800 - 64, 0))
 
-playerPieces = []
-botPieces = []
-pieceClicked = False
-thePiece = []
+playerPieces = []                  # The list of the players (bottom side) pieces
+botPieces = []                     # The list of the bots (top side) pieces
+pieceClicked = False               # Boolean for if there is a piece currently selected
+thePiece = []                      # The piece that is currently selected (in hand)
+debugMode = False                  # The debug mode
 
 # Initialize the board
 # 1 - Pawn
@@ -97,11 +100,6 @@ def InitializeBoard(board):
     return board
 board = InitializeBoard(board)
 
-for piece in playerPieces:
-    print(piece)
-    print(piece.pos)
-    print(piece.possibleMoves)
-
 # Faster way compare elements of tuples
 def lessAll(tuple1, tuple2):
     result = all(x < y for x, y in zip(tuple1, tuple2))
@@ -146,6 +144,13 @@ def DrawBoard(board):
             x += 1
         y += 1
 
+# Reset the game
+def ResetBoard():
+    botPieces.clear()
+    playerPieces.clear()
+    board = InitializeBoard(np.array([]))
+    return board
+
 # Debugger
 def Debugger():
     print(botPieces)
@@ -161,15 +166,22 @@ running = True
 while running:
     # Manage the events
     for event in pygame.event.get():
+        # If the close button is pressed
         if event.type == pygame.QUIT:
             running = False
+            break
         
+        #If the mouse button is pressed
         elif event.type == pygame.MOUSEBUTTONDOWN:
             mouse = pygame.mouse.get_pos()
             
             # If you click on the debugger button
             if greAll(mouse, (0, 0)) and lessAll(mouse, (64, 64)):
                 Debugger()
+
+            # If you click on the reset button
+            if greAll(mouse, (800 - 64, 0)) and lessAll(mouse, (800, 64)):
+                board = ResetBoard()
 
             # If you click on your own piece, pick it up (show possible moves)
             for piece in playerPieces:
@@ -203,13 +215,54 @@ while running:
                             thePiece.clear()
                             pieceClicked = False
 
-            #If you have already clicked on your piece, and you want to move it
+            # If you click on THE BOTS piece
+            # IF DEBUG MODE AND IF NO PIECE CLICKED YET
+            for piece in botPieces:
+                if greAll(mouse, (152 + piece.pos[1] * 64, 2 + piece.pos[0] * 64)) and lessAll(mouse, (152 + piece.pos[1] * 64 + 64, 2 + piece.pos[0] * 64 + 64)):
+                    print(piece)
+                    print("Piece pos: ", piece.pos)
+                    print("Poss moves: ", piece.possibleMoves)
+                    piece.FindPossibleMoves(board, botPieces)
+
+                    # If the piece can't be clicked (has no moves), skip it
+                    if piece.possibleMoves.__len__() == 0 and thePiece.__len__() == 0:
+                        continue
+                    # then if a piece can't be clicked and there was a piece in hand
+                    elif piece.possibleMoves.__len__() == 0:
+                        thePiece[0].clicked = False
+                        thePiece.clear()
+                        pieceClicked = False
+                    # then if a piece is not clicked and the piece has moves    
+                    elif pieceClicked == False and piece.possibleMoves.__len__() > 0:
+                        piece.clicked = True
+                        pieceClicked = True
+                        thePiece.append(piece)
+                    # then if this piece is in your hand or if you deselected    
+                    else:
+                        if piece.clicked == True:
+                            piece.clicked == False
+                            pieceClicked = False
+                            thePiece.clear()
+                        else:
+                            thePiece[0].clicked = False
+                            thePiece.clear()
+                            pieceClicked = False
+
+            # If you have already clicked on your piece, and you want to move it
             if pieceClicked:
                 for move in thePiece[0].possibleMoves:
                     if greAll(mouse, (152 + move[1] * 64, 2 + move[0] * 64)) and lessAll(mouse, (152 + move[1] * 64 + 64, 2 + move[0] * 64 + 64)):
                         board[thePiece[0].pos[0], thePiece[0].pos[1]] = 0
-                        thePiece[0].MoveTo(move, board, botPieces)
+
+                        if thePiece[0].isPlayer:
+                            thePiece[0].MoveTo(move, board, botPieces)
+                        else:
+                            thePiece[0].MoveTo(move, board, playerPieces)
+
                         board[move[0], move[1]] = piece.value
+                        if not(thePiece[0].isPlayer):
+                            board[move[0], move[1]] += 10
+
                         pieceClicked = False
                         thePiece.clear()
 

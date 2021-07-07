@@ -95,9 +95,12 @@ class Rook:
         self.pos = position
         self.clicked = False
         self.possibleMoves = []
-        self.FindPossibleMoves()
+        self.FindFirstMoves()
+    
+    def FindFirstMoves(self):
+        self.possibleMoves = []
 
-    def FindPossibleMoves(self):
+    def FindPossibleMoves(self, board, oppositePieces):
         self.possibleMoves = []
 
 class Knight:
@@ -107,9 +110,12 @@ class Knight:
         self.pos = position
         self.clicked = False
         self.possibleMoves = []
-        self.FindPossibleMoves()
+        self.FindFirstMoves()
     
-    def FindPossibleMoves(self):
+    def FindFirstMoves(self):
+        self.possibleMoves = []
+    
+    def FindPossibleMoves(self, board, oppositePieces):
         self.possibleMoves = []
 
 class Bishop:
@@ -119,9 +125,12 @@ class Bishop:
         self.pos = position
         self.clicked = False
         self.possibleMoves = []
-        self.FindPossibleMoves()
+        self.FindFirstMoves()
 
-    def FindPossibleMoves(self):
+    def FindFirstMoves(self):
+        self.possibleMoves = []
+
+    def FindPossibleMoves(self, board, oppositePieces):
         self.possibleMoves = []
 
 class Queen:
@@ -131,9 +140,12 @@ class Queen:
         self.pos = position
         self.clicked = False
         self.possibleMoves = []
-        self.FindPossibleMoves()
+        self.FindFirstMoves()
     
-    def FindPossibleMoves(self):
+    def FindFirstMoves(self):
+        self.possibleMoves = []
+
+    def FindPossibleMoves(self, board, oppositePieces):
         self.possibleMoves = []
 
 class King:
@@ -143,7 +155,10 @@ class King:
         self.pos = position
         self.clicked = False
         self.possibleMoves = []
-        self.FindPossibleMoves()
+        self.FindFirstMoves()
     
-    def FindPossibleMoves(self):
+    def FindFirstMoves(self):
+        self.possibleMoves = []
+
+    def FindPossibleMoves(self, board, oppositePieces):
         self.possibleMoves = []
