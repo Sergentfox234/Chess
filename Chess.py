@@ -55,41 +55,41 @@ def InitializeBoard(board):
     board = np.zeros((8, 8), dtype= np.int16)
     #Rooks
     board[0][0] = 12
-    botPieces.append(pc.Rook([0, 0]))
+    botPieces.append(pc.Rook([0, 0], False))
     board[0][7] = 12
-    botPieces.append(pc.Rook([0, 7]))
+    botPieces.append(pc.Rook([0, 7], False))
     board[7][0] = 2
-    playerPieces.append(pc.Rook([7, 0]))
+    playerPieces.append(pc.Rook([7, 0], True))
     board[7][7] = 2
-    playerPieces.append(pc.Rook([7, 7]))
+    playerPieces.append(pc.Rook([7, 7], True))
     #Knights
     board[0][1] = 13
-    botPieces.append(pc.Knight([0, 1]))
+    botPieces.append(pc.Knight([0, 1], False))
     board[0][6] = 13
-    botPieces.append(pc.Knight([0, 6]))
+    botPieces.append(pc.Knight([0, 6], False))
     board[7][1] = 3
-    playerPieces.append(pc.Knight([7, 1]))
+    playerPieces.append(pc.Knight([7, 1], True))
     board[7][6] = 3
-    playerPieces.append(pc.Knight([7, 6]))
+    playerPieces.append(pc.Knight([7, 6], True))
     #Bishops
     board[0][2] = 14
-    botPieces.append(pc.Bishop([0, 2]))
+    botPieces.append(pc.Bishop([0, 2], False))
     board[0][5] = 14
-    botPieces.append(pc.Bishop([0, 5]))
+    botPieces.append(pc.Bishop([0, 5], False))
     board[7][2] = 4
-    playerPieces.append(pc.Bishop([7, 2]))
+    playerPieces.append(pc.Bishop([7, 2], True))
     board[7][5] = 4
-    playerPieces.append(pc.Bishop([7, 5]))
+    playerPieces.append(pc.Bishop([7, 5], True))
     #Queens
     board[0][3] = 15
-    botPieces.append(pc.Queen([0, 3]))
+    botPieces.append(pc.Queen([0, 3], False))
     board[7][3] = 5
-    playerPieces.append(pc.Queen([7, 3]))
+    playerPieces.append(pc.Queen([7, 3], True))
     #Kings
     board [0][4] = 16
-    botPieces.append(pc.King([0, 4]))
+    botPieces.append(pc.King([0, 4], False))
     board [7][4] = 6
-    playerPieces.append(pc.King([7, 4]))
+    playerPieces.append(pc.King([7, 4], True))
     #Pawns
     for x in range(8):
         board[1][x] = 11
@@ -152,9 +152,11 @@ def ResetBoard():
     return board
 
 # Debugger
-def Debugger():
+def Debugger(debug):
     print(botPieces)
     print(playerPieces)
+    debugMode = not(debug)
+    return debugMode
 
 # Draw possible moves
 def DrawPossibleMoves(piece):
@@ -174,10 +176,11 @@ while running:
         #If the mouse button is pressed
         elif event.type == pygame.MOUSEBUTTONDOWN:
             mouse = pygame.mouse.get_pos()
+            print (mouse)
             
             # If you click on the debugger button
             if greAll(mouse, (0, 0)) and lessAll(mouse, (64, 64)):
-                Debugger()
+                debugMode = Debugger(debugMode)
 
             # If you click on the reset button
             if greAll(mouse, (800 - 64, 0)) and lessAll(mouse, (800, 64)):
@@ -195,10 +198,10 @@ while running:
                     if piece.possibleMoves.__len__() == 0 and thePiece.__len__() == 0:
                         continue
                     # then if a piece can't be clicked and there was a piece in hand
-                    elif piece.possibleMoves.__len__() == 0:
-                        thePiece[0].clicked = False
-                        thePiece.clear()
-                        pieceClicked = False
+                    #elif piece.possibleMoves.__len__() == 0:
+                     #   thePiece[0].clicked = False
+                    #    thePiece.clear()
+                     #   pieceClicked = False
                     # then if a piece is not clicked and the piece has moves    
                     elif pieceClicked == False and piece.possibleMoves.__len__() > 0:
                         piece.clicked = True
@@ -210,7 +213,7 @@ while running:
                             piece.clicked == False
                             pieceClicked = False
                             thePiece.clear()
-                        else:
+                        elif not(debugMode):
                             thePiece[0].clicked = False
                             thePiece.clear()
                             pieceClicked = False
@@ -218,7 +221,7 @@ while running:
             # If you click on THE BOTS piece
             # IF DEBUG MODE AND IF NO PIECE CLICKED YET
             for piece in botPieces:
-                if greAll(mouse, (152 + piece.pos[1] * 64, 2 + piece.pos[0] * 64)) and lessAll(mouse, (152 + piece.pos[1] * 64 + 64, 2 + piece.pos[0] * 64 + 64)):
+                if debugMode and not(pieceClicked) and greAll(mouse, (152 + piece.pos[1] * 64, 2 + piece.pos[0] * 64)) and lessAll(mouse, (152 + piece.pos[1] * 64 + 64, 2 + piece.pos[0] * 64 + 64)):
                     print(piece)
                     print("Piece pos: ", piece.pos)
                     print("Poss moves: ", piece.possibleMoves)
@@ -228,10 +231,10 @@ while running:
                     if piece.possibleMoves.__len__() == 0 and thePiece.__len__() == 0:
                         continue
                     # then if a piece can't be clicked and there was a piece in hand
-                    elif piece.possibleMoves.__len__() == 0:
-                        thePiece[0].clicked = False
-                        thePiece.clear()
-                        pieceClicked = False
+                    #elif piece.possibleMoves.__len__() == 0:
+                       # thePiece[0].clicked = False
+                       # thePiece.clear()
+                       # pieceClicked = False
                     # then if a piece is not clicked and the piece has moves    
                     elif pieceClicked == False and piece.possibleMoves.__len__() > 0:
                         piece.clicked = True
@@ -251,8 +254,14 @@ while running:
             # If you have already clicked on your piece, and you want to move it
             if pieceClicked:
                 for move in thePiece[0].possibleMoves:
-                    if greAll(mouse, (152 + move[1] * 64, 2 + move[0] * 64)) and lessAll(mouse, (152 + move[1] * 64 + 64, 2 + move[0] * 64 + 64)):
+                    bottomLeft = (152 + move[1] * 64, 2 + move[0] * 64)
+                    topRight = (152 + move[1] * 64 + 64, 2 + move[0] * 64 + 64)
+                    if greAll(mouse, bottomLeft) and lessAll(mouse, topRight):
                         board[thePiece[0].pos[0], thePiece[0].pos[1]] = 0
+
+                        # Debug #
+                        # ReMOVE #
+                        print("Move should happen")
 
                         if thePiece[0].isPlayer:
                             thePiece[0].MoveTo(move, board, botPieces)
@@ -260,11 +269,14 @@ while running:
                             thePiece[0].MoveTo(move, board, playerPieces)
 
                         board[move[0], move[1]] = piece.value
+
                         if not(thePiece[0].isPlayer):
                             board[move[0], move[1]] += 10
 
                         pieceClicked = False
                         thePiece.clear()
+                    else:
+                        print("no move")
 
     #Change the background
     window.fill((0, 100, 0))

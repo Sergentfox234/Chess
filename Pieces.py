@@ -71,16 +71,20 @@ class Pawn:
         # If not first move && there is nothing blocking
         if self.isPlayer and board[self.pos[0] - 1, self.pos[1]] == 0:
             self.possibleMoves.append([self.pos[0] - 1, self.pos[1]])
-        elif not(self.isPlayer) and board[self.pos[0] + 1, self.pos[1]] == 0:
+        elif not(self.isPlayer) and self.pos[0] < 7 and board[self.pos[0] + 1, self.pos[1]] == 0:
             self.possibleMoves.append([self.pos[0] + 1, self.pos[1]])
         
         # If the pawn can ATTACK to the left
         if self.isPlayer and self.pos[1] > 0 and board[self.pos[0] - 1, self.pos[1] - 1] >= 10:
             self.possibleMoves.append([self.pos[0] - 1, self.pos[1] - 1])
+        elif not(self.isPlayer) and self.pos[0] < 7 and self.pos[1] < 7 and board[self.pos[0] + 1, self.pos[1] + 1] < 10 and board[self.pos[0] + 1, self.pos[1] + 1] > 0:
+            self.possibleMoves.append([self.pos[0] + 1, self.pos[1] + 1])
 
         # If the pawn can ATTACK to the right 
         if self.isPlayer and self.pos[1] < 7 and board[self.pos[0] - 1, self.pos[1] + 1] >= 10:
             self.possibleMoves.append([self.pos[0] - 1, self.pos[1] + 1])
+        elif not(self.isPlayer) and self.pos[0] < 7 and self.pos[1] > 0 and board[self.pos[0] + 1, self.pos[1] - 1] < 10 and board[self.pos[0] + 1, self.pos[1] - 1] > 0:
+            self.possibleMoves.append([self.pos[0] + 1, self.pos[1] - 1])
 
         # If enpessent to the left
         if self.isPlayer and board[self.pos[0], self.pos[1] - 1] == 11:
@@ -91,8 +95,9 @@ class Pawn:
 class Rook:
     value = 2
 
-    def __init__(self, position):
+    def __init__(self, position, isP):
         self.pos = position
+        self.isPlayer = isP
         self.clicked = False
         self.possibleMoves = []
         self.FindFirstMoves()
@@ -106,8 +111,9 @@ class Rook:
 class Knight:
     value = 3
 
-    def __init__(self, position):
+    def __init__(self, position, isP):
         self.pos = position
+        self.isPlayer = isP
         self.clicked = False
         self.possibleMoves = []
         self.FindFirstMoves()
@@ -121,23 +127,25 @@ class Knight:
 class Bishop:
     value = 4
 
-    def __init__(self, position):
+    def __init__(self, position, isP):
         self.pos = position
+        self.isPlayer = isP
         self.clicked = False
         self.possibleMoves = []
         self.FindFirstMoves()
 
     def FindFirstMoves(self):
-        self.possibleMoves = []
+        self.possibleMoves = [[0, 0]]
 
     def FindPossibleMoves(self, board, oppositePieces):
-        self.possibleMoves = []
+        self.possibleMoves = [[0, 0]]
 
 class Queen:
     value = 5
 
-    def __init__(self, position):
+    def __init__(self, position, isP):
         self.pos = position
+        self.isPlayer = isP
         self.clicked = False
         self.possibleMoves = []
         self.FindFirstMoves()
@@ -151,8 +159,9 @@ class Queen:
 class King:
     value = 6
 
-    def __init__(self, position):
+    def __init__(self, position, isP):
         self.pos = position
+        self.isPlayer = isP
         self.clicked = False
         self.possibleMoves = []
         self.FindFirstMoves()
