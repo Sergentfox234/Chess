@@ -162,6 +162,7 @@ def ResetBoard():
 def Debugger(debug):
     print(botPieces)
     print(playerPieces)
+    print(board)
     debugMode = not(debug)
     return debugMode
 
@@ -208,6 +209,7 @@ while running:
                         print(piece)
                         print("Piece pos: ", piece.pos)
                         print("Poss moves: ", piece.possibleMoves)
+                        print("Piece value: ", piece.value)
                         piece.FindPossibleMoves(board, botPieces)
 
                         # If the piece can't be clicked (has no moves), skip it
@@ -226,7 +228,7 @@ while running:
                         # then if this piece is in your hand or if you deselected    
                         else:
                             if piece.clicked == True:
-                                piece.clicked == False
+                                piece.clicked = False
                                 pieceClicked = False
                                 thePiece.clear()
                             elif not(debugMode):
@@ -241,6 +243,7 @@ while running:
                         print(piece)
                         print("Piece pos: ", piece.pos)
                         print("Poss moves: ", piece.possibleMoves)
+                        print("Piece value: ", piece.value)
                         piece.FindPossibleMoves(board, playerPieces)
 
                         # If the piece can't be clicked (has no moves), skip it
@@ -292,7 +295,7 @@ while running:
                             else:
                                 board = thePiece[0].MoveTo(move, board, playerPieces)
 
-                        board[move[0], move[1]] = piece.value
+                        board[move[0], move[1]] = thePiece[0].value
 
                         if not(thePiece[0].isPlayer):
                             board[move[0], move[1]] += 10

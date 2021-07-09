@@ -139,11 +139,84 @@ class Rook:
         self.possibleMoves = []
         self.FindFirstMoves()
     
+    def MoveTo(self, position, board, oppositePieces):
+        # Move the piece to the position
+        self.pos = position
+        self.clicked = False
+        
+        for piece in oppositePieces:
+            if piece.pos == self.pos:
+                oppositePieces.remove(piece)
+        
+        self.FindPossibleMoves(board, oppositePieces)
+        return board
+
     def FindFirstMoves(self):
         self.possibleMoves = []
 
     def FindPossibleMoves(self, board, oppositePieces):
         self.possibleMoves = []
+
+        #Up (check for blocking)
+        if self.pos[0] > 0:
+            for space in range(0, self.pos[0]):
+                if board[self.pos[0] - 1 - space, self.pos[1]] == 0:
+                    self.possibleMoves.append([self.pos[0] - 1 - space, self.pos[1]])
+                elif self.isPlayer and board[self.pos[0] - 1 - space, self.pos[1]] > 10:
+                    self.possibleMoves.append([self.pos[0] - 1 - space, self.pos[1]])
+                    break
+                elif not(self.isPlayer) and board[self.pos[0] - 1 - space, self.pos[1]] < 10:
+                    self.possibleMoves.append([self.pos[0] - 1 - space, self.pos[1]])
+                    break
+                else:
+                    break
+        #Down
+        if self.pos[0] < 7:
+            x = 0
+            for space in range(self.pos[0] + 1, 8):
+                if board[self.pos[0] + 1 + x, self.pos[1]] == 0:
+                    self.possibleMoves.append([self.pos[0] + 1 + x, self.pos[1]])
+                    x += 1
+                elif self.isPlayer and board[self.pos[0] + 1 + x, self.pos[1]] > 10:
+                    self.possibleMoves.append([self.pos[0] + 1 + x, self.pos[1]])
+                    x += 1
+                    break
+                elif not(self.isPlayer) and board[self.pos[0] + 1 + x, self.pos[1]] < 10:
+                    self.possibleMoves.append([self.pos[0] + 1 + x, self.pos[1]])
+                    x += 1
+                    break
+                else:
+                    break
+        #Left
+        if self.pos[1] > 0:
+            for space in range(0, self.pos[1]):
+                if board[self.pos[0], self.pos[1] - 1 - space] == 0:
+                    self.possibleMoves.append([self.pos[0], self.pos[1] - 1 - space])
+                elif self.isPlayer and board[self.pos[0], self.pos[1] - 1 - space] > 10:
+                    self.possibleMoves.append([self.pos[0], self.pos[1] - 1 - space])
+                    break
+                elif not(self.isPlayer) and board[self.pos[0], self.pos[1] - 1 - space] < 10:
+                    self.possibleMoves.append([self.pos[0], self.pos[1] - 1 - space])
+                    break
+                else:
+                    break
+        #Right
+        if self.pos[1] < 7:
+            x = 0
+            for space in range(self.pos[1] + 1, 8):
+                if board[self.pos[0], self.pos[1] + 1 + x] == 0:
+                    self.possibleMoves.append([self.pos[0], self.pos[1] + 1 + x])
+                    x += 1
+                elif self.isPlayer and board[self.pos[0], self.pos[1] + 1 + x] > 10:
+                    self.possibleMoves.append([self.pos[0], self.pos[1] + 1 + x])
+                    x += 1
+                    break
+                elif not(self.isPlayer) and board[self.pos[0], self.pos[1] + 1 + x] < 10:
+                    self.possibleMoves.append([self.pos[0], self.pos[1] + 1 + x])
+                    x += 1
+                    break
+                else:
+                    break
 
 class Knight:
     value = 3
