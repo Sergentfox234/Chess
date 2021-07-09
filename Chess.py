@@ -38,9 +38,12 @@ def PlaceBoard():
 
 playerPieces = []                  # The list of the players (bottom side) pieces
 botPieces = []                     # The list of the bots (top side) pieces
+pawns = []                         # List of pawns for quick removal of enpassantability every turn
+enPassant = [False]                  # Boolean indicator if an enPassant can happen
 pieceClicked = False               # Boolean for if there is a piece currently selected
 thePiece = []                      # The piece that is currently selected (in hand)
 debugMode = False                  # The debug mode
+playerTurn = True                  # The turn dictator
 
 # Initialize the board
 # 1 - Pawn
@@ -93,9 +96,12 @@ def InitializeBoard(board):
     #Pawns
     for x in range(8):
         board[1][x] = 11
-        botPieces.append(pc.Pawn([1, x], False))
+        pawns.append(pc.Pawn([1, x], False))
+        botPieces.append(pawns[2 * x])
+        
         board[6][x] = 1
-        playerPieces.append(pc.Pawn([6, x], True))
+        pawns.append(pc.Pawn([6, x], True))
+        playerPieces.append(pawns[2 * x + 1])
     
     return board
 board = InitializeBoard(board)
@@ -146,6 +152,7 @@ def DrawBoard(board):
 
 # Reset the game
 def ResetBoard():
+    pawns.clear()
     botPieces.clear()
     playerPieces.clear()
     board = InitializeBoard(np.array([]))
@@ -162,6 +169,11 @@ def Debugger(debug):
 def DrawPossibleMoves(piece):
     for move in piece.possibleMoves:
         pygame.draw.circle(window, (100, 100, 100, 255), [152 + move[1] * 64 + 32, 2 + move[0] * 64 + 32], 15)
+
+# Reset Enpassantability (since it can only happen IMMEDIATELY after)
+def ResetEnPass(pawns):
+    for piece in pawns:
+        piece.enPessentable = False
 
 # The game loop
 running = True  
@@ -185,71 +197,75 @@ while running:
             # If you click on the reset button
             if greAll(mouse, (800 - 64, 0)) and lessAll(mouse, (800, 64)):
                 board = ResetBoard()
+                pieceClicked = False
+                playerTurn = True
+                continue
 
             # If you click on your own piece, pick it up (show possible moves)
-            for piece in playerPieces:
-                if greAll(mouse, (152 + piece.pos[1] * 64, 2 + piece.pos[0] * 64)) and lessAll(mouse, (152 + piece.pos[1] * 64 + 64, 2 + piece.pos[0] * 64 + 64)):
-                    print(piece)
-                    print("Piece pos: ", piece.pos)
-                    print("Poss moves: ", piece.possibleMoves)
-                    piece.FindPossibleMoves(board, botPieces)
+            if playerTurn:
+                for piece in playerPieces:
+                    if greAll(mouse, (152 + piece.pos[1] * 64, 2 + piece.pos[0] * 64)) and lessAll(mouse, (152 + piece.pos[1] * 64 + 64, 2 + piece.pos[0] * 64 + 64)):
+                        print(piece)
+                        print("Piece pos: ", piece.pos)
+                        print("Poss moves: ", piece.possibleMoves)
+                        piece.FindPossibleMoves(board, botPieces)
 
-                    # If the piece can't be clicked (has no moves), skip it
-                    if piece.possibleMoves.__len__() == 0 and thePiece.__len__() == 0:
-                        continue
-                    # then if a piece can't be clicked and there was a piece in hand
-                    #elif piece.possibleMoves.__len__() == 0:
-                     #   thePiece[0].clicked = False
-                    #    thePiece.clear()
-                     #   pieceClicked = False
-                    # then if a piece is not clicked and the piece has moves    
-                    elif pieceClicked == False and piece.possibleMoves.__len__() > 0:
-                        piece.clicked = True
-                        pieceClicked = True
-                        thePiece.append(piece)
-                    # then if this piece is in your hand or if you deselected    
-                    else:
-                        if piece.clicked == True:
-                            piece.clicked == False
-                            pieceClicked = False
-                            thePiece.clear()
-                        elif not(debugMode):
-                            thePiece[0].clicked = False
-                            thePiece.clear()
-                            pieceClicked = False
-
-            # If you click on THE BOTS piece
-            # IF DEBUG MODE AND IF NO PIECE CLICKED YET
-            for piece in botPieces:
-                if debugMode and not(pieceClicked) and greAll(mouse, (152 + piece.pos[1] * 64, 2 + piece.pos[0] * 64)) and lessAll(mouse, (152 + piece.pos[1] * 64 + 64, 2 + piece.pos[0] * 64 + 64)):
-                    print(piece)
-                    print("Piece pos: ", piece.pos)
-                    print("Poss moves: ", piece.possibleMoves)
-                    piece.FindPossibleMoves(board, botPieces)
-
-                    # If the piece can't be clicked (has no moves), skip it
-                    if piece.possibleMoves.__len__() == 0 and thePiece.__len__() == 0:
-                        continue
-                    # then if a piece can't be clicked and there was a piece in hand
-                    #elif piece.possibleMoves.__len__() == 0:
-                       # thePiece[0].clicked = False
-                       # thePiece.clear()
-                       # pieceClicked = False
-                    # then if a piece is not clicked and the piece has moves    
-                    elif pieceClicked == False and piece.possibleMoves.__len__() > 0:
-                        piece.clicked = True
-                        pieceClicked = True
-                        thePiece.append(piece)
-                    # then if this piece is in your hand or if you deselected    
-                    else:
-                        if piece.clicked == True:
-                            piece.clicked == False
-                            pieceClicked = False
-                            thePiece.clear()
+                        # If the piece can't be clicked (has no moves), skip it
+                        if piece.possibleMoves.__len__() == 0 and thePiece.__len__() == 0:
+                            continue
+                        # then if a piece can't be clicked and there was a piece in hand
+                        #elif piece.possibleMoves.__len__() == 0:
+                        #   thePiece[0].clicked = False
+                        #    thePiece.clear()
+                        #   pieceClicked = False
+                        # then if a piece is not clicked and the piece has moves    
+                        elif pieceClicked == False and piece.possibleMoves.__len__() > 0:
+                            piece.clicked = True
+                            pieceClicked = True
+                            thePiece.append(piece)
+                        # then if this piece is in your hand or if you deselected    
                         else:
-                            thePiece[0].clicked = False
-                            thePiece.clear()
-                            pieceClicked = False
+                            if piece.clicked == True:
+                                piece.clicked == False
+                                pieceClicked = False
+                                thePiece.clear()
+                            elif not(debugMode):
+                                thePiece[0].clicked = False
+                                thePiece.clear()
+                                pieceClicked = False
+
+            # If bot's turn
+            else:
+                for piece in botPieces:
+                    if greAll(mouse, (152 + piece.pos[1] * 64, 2 + piece.pos[0] * 64)) and lessAll(mouse, (152 + piece.pos[1] * 64 + 64, 2 + piece.pos[0] * 64 + 64)):
+                        print(piece)
+                        print("Piece pos: ", piece.pos)
+                        print("Poss moves: ", piece.possibleMoves)
+                        piece.FindPossibleMoves(board, playerPieces)
+
+                        # If the piece can't be clicked (has no moves), skip it
+                        if piece.possibleMoves.__len__() == 0 and thePiece.__len__() == 0:
+                            continue
+                        # then if a piece can't be clicked and there was a piece in hand
+                        #elif piece.possibleMoves.__len__() == 0:
+                        # thePiece[0].clicked = False
+                        # thePiece.clear()
+                        # pieceClicked = False
+                        # then if a piece is not clicked and the piece has moves    
+                        elif pieceClicked == False and piece.possibleMoves.__len__() > 0:
+                            piece.clicked = True
+                            pieceClicked = True
+                            thePiece.append(piece)
+                        # then if this piece is in your hand or if you deselected    
+                        else:
+                            if piece.clicked == True:
+                                piece.clicked == False
+                                pieceClicked = False
+                                thePiece.clear()
+                            else:
+                                thePiece[0].clicked = False
+                                thePiece.clear()
+                                pieceClicked = False
 
             # If you have already clicked on your piece, and you want to move it
             if pieceClicked:
@@ -259,24 +275,31 @@ while running:
                     if greAll(mouse, bottomLeft) and lessAll(mouse, topRight):
                         board[thePiece[0].pos[0], thePiece[0].pos[1]] = 0
 
-                        # Debug #
-                        # ReMOVE #
-                        print("Move should happen")
+                        # If a piece can be enPassanted this turn, then turn it off for next turn
+                        if enPassant[0]:
+                            ResetEnPass(pawns)
+                            enPassant[0] = False
 
+                        # Move the piece
                         if thePiece[0].isPlayer:
-                            thePiece[0].MoveTo(move, board, botPieces)
+                            if thePiece[0].value == 1:
+                                board = thePiece[0].MoveTo(move, board, botPieces, enPassant)
+                            else:
+                                board = thePiece[0].MoveTo(move, board, botPieces)
                         else:
-                            thePiece[0].MoveTo(move, board, playerPieces)
+                            if thePiece[0].value == 1:
+                                board = thePiece[0].MoveTo(move, board, playerPieces, enPassant)
+                            else:
+                                board = thePiece[0].MoveTo(move, board, playerPieces)
 
                         board[move[0], move[1]] = piece.value
 
                         if not(thePiece[0].isPlayer):
                             board[move[0], move[1]] += 10
 
+                        playerTurn = not(playerTurn)
                         pieceClicked = False
                         thePiece.clear()
-                    else:
-                        print("no move")
 
     #Change the background
     window.fill((0, 100, 0))
