@@ -1,4 +1,5 @@
 import pygame
+import random as rnd
 import numpy as np
 import Pieces as pc
 
@@ -44,6 +45,7 @@ pieceClicked = False               # Boolean for if there is a piece currently s
 thePiece = []                      # The piece that is currently selected (in hand)
 debugMode = False                  # The debug mode
 playerTurn = True                  # The turn dictator
+playerWhite = True                 # The player's color
 
 # Initialize the board
 # 1 - Pawn
@@ -52,7 +54,7 @@ playerTurn = True                  # The turn dictator
 # 4 - Bishop
 # 5 - Queen
 # 6 - King
-# 1 will be placed in front for black pieces ie 16 is black king
+# 1 will be placed in front for bot pieces ie 16 is bot king
 board = np.array([])
 def InitializeBoard(board):
     board = np.zeros((8, 8), dtype= np.int16)
@@ -115,7 +117,7 @@ def greAll(tuple1, tuple2):
     return result
 
 # Draw the board
-def DrawBoard(board):
+def DrawBoardW(board):
     x = 0
     y = 0
     
@@ -149,6 +151,40 @@ def DrawBoard(board):
 
             x += 1
         y += 1
+def DrawBoardB(board):
+    x = 0
+    y = 0
+    
+    for row in board:
+        x = 0
+        for piece in row:
+            if piece == 1:
+                window.blit(blackPawn, (64 * x + 152, 64 * y + 2))
+            elif piece == 11:
+                window.blit(whitePawn, (64 * x + 152, 64 * y + 2))
+            elif piece == 2:
+                window.blit(blackRook, (64 * x + 152, 64 * y + 2)) 
+            elif piece == 12:
+                window.blit(whiteRook, (64 * x + 152, 64 * y + 2))
+            elif piece == 3:
+                window.blit(blackKnight, (64 * x + 152, 64 * y + 2))
+            elif piece == 13:
+                window.blit(whiteKnight, (64 * x + 152, 64 * y + 2))
+            elif piece == 4:
+                window.blit(blackBishop, (64 * x + 152, 64 * y + 2))
+            elif piece == 14:
+                window.blit(whiteBishop, (64 * x + 152, 64 * y + 2))
+            elif piece == 5:
+                window.blit(blackQueen, (64 * x + 152, 64 * y + 2))
+            elif piece == 15:
+                window.blit(whiteQueen, (64 * x + 152, 64 * y + 2))
+            elif piece == 6:
+                window.blit(blackKing, (64 * x + 152, 64 * y + 2))
+            elif piece == 16:
+                window.blit(whiteKing, (64 * x + 152, 64 * y + 2))
+
+            x += 1
+        y += 1
 
 # Reset the game
 def ResetBoard():
@@ -156,7 +192,20 @@ def ResetBoard():
     botPieces.clear()
     playerPieces.clear()
     board = InitializeBoard(np.array([]))
+    
     return board
+
+# Reset the turn
+def ResetTurn():
+    choice = rnd.randint(0, 1)
+    if choice == 0:
+        playerTurn = True
+        playerWhite = True
+    else:
+        playerTurn = False
+        playerWhite = False
+
+    return [playerTurn, playerWhite]
 
 # Debugger
 def Debugger(debug):
@@ -175,6 +224,14 @@ def DrawPossibleMoves(piece):
 def ResetEnPass(pawns):
     for piece in pawns:
         piece.enPessentable = False
+
+choice = rnd.randint(0, 1)
+if choice == 0:
+    playerTurn = True
+    playerWhite = True
+else:
+    playerTurn = False
+    playerWhite = False
 
 # The game loop
 running = True  
@@ -198,8 +255,10 @@ while running:
             # If you click on the reset button
             if greAll(mouse, (800 - 64, 0)) and lessAll(mouse, (800, 64)):
                 board = ResetBoard()
+                boolList = ResetTurn()
+                playerTurn = boolList[0]
+                playerWhite = boolList[1]
                 pieceClicked = False
-                playerTurn = True
                 continue
 
             # If you click on your own piece, pick it up (show possible moves)
@@ -309,7 +368,10 @@ while running:
 
     # Update the display
     PlaceBoard()
-    DrawBoard(board)
+    if playerWhite:
+        DrawBoardW(board)
+    else:
+        DrawBoardB(board)
     
     #If a piece is clicked, display it's possible moves
     if pieceClicked:
