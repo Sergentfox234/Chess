@@ -40,7 +40,8 @@ def PlaceBoard():
 playerPieces = []                  # The list of the players (bottom side) pieces
 botPieces = []                     # The list of the bots (top side) pieces
 pawns = []                         # List of pawns for quick removal of enpassantability every turn
-enPassant = [False]                  # Boolean indicator if an enPassant can happen
+enPassant = [False]                # Boolean indicator if an enPassant can happen
+resetPass = False                  # Boolean catcher for if the turn needs to reset it's enpessant ability
 pieceClicked = False               # Boolean for if there is a piece currently selected
 thePiece = []                      # The piece that is currently selected (in hand)
 debugMode = False                  # The debug mode
@@ -191,11 +192,11 @@ def ResetBoard():
     pawns.clear()
     botPieces.clear()
     playerPieces.clear()
+    thePiece.clear()
     board = InitializeBoard(np.array([]))
     
     return board
-
-# Reset the turn
+# Reset the first turn
 def ResetTurn():
     choice = rnd.randint(0, 1)
     if choice == 0:
@@ -218,7 +219,7 @@ def Debugger(debug):
 # Draw possible moves
 def DrawPossibleMoves(piece):
     for move in piece.possibleMoves:
-        pygame.draw.circle(window, (100, 100, 100, 255), [152 + move[1] * 64 + 32, 2 + move[0] * 64 + 32], 15)
+        pygame.draw.circle(window, (100, 100, 100, 0), [152 + move[1] * 64 + 32, 2 + move[0] * 64 + 32], 15)
 
 # Reset Enpassantability (since it can only happen IMMEDIATELY after)
 def ResetEnPass(pawns):
@@ -339,8 +340,7 @@ while running:
 
                         # If a piece can be enPassanted this turn, then turn it off for next turn
                         if enPassant[0]:
-                            ResetEnPass(pawns)
-                            enPassant[0] = False
+                            resetPass = True
 
                         # Move the piece
                         if thePiece[0].isPlayer:
@@ -358,6 +358,11 @@ while running:
 
                         if not(thePiece[0].isPlayer):
                             board[move[0], move[1]] += 10
+
+                        if resetPass:
+                            ResetEnPass(pawns)
+                            enPassant[0] = False
+                            resetPass = False
 
                         playerTurn = not(playerTurn)
                         pieceClicked = False

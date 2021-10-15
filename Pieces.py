@@ -35,22 +35,22 @@ class Pawn:
 
         if self.isPlayer and position == leftSpot:
             for piece in oppositePieces:
-                if piece.pos == [self.pos[0], self.pos[1] - 1]:
+                if piece.pos == [self.pos[0], self.pos[1] - 1] and piece.enPessentable:
                     oppositePieces.remove(piece)
                     board[self.pos[0], self.pos[1] - 1] = 0
         elif self.isPlayer and position == rightSpot:
             for piece in oppositePieces:
-                if piece.pos == [self.pos[0], self.pos[1] + 1]:
+                if piece.pos == [self.pos[0], self.pos[1] + 1] and piece.enPessentable:
                     oppositePieces.remove(piece)
                     board[self.pos[0], self.pos[1] + 1] = 0
         elif not(self.isPlayer) and position == bLeftSpot:
             for piece in oppositePieces:
-                if piece.pos == [self.pos[0], self.pos[1] + 1]:
+                if piece.pos == [self.pos[0], self.pos[1] + 1] and piece.enPessentable:
                     oppositePieces.remove(piece)
                     board[self.pos[0], self.pos[1] + 1] = 0
         elif not(self.isPlayer) and position == bRightSpot:
             for piece in oppositePieces:
-                if piece.pos == [self.pos[0], self.pos[1] - 1]:
+                if piece.pos == [self.pos[0], self.pos[1] - 1] and piece.enPessentable:
                     oppositePieces.remove(piece)
                     board[self.pos[0], self.pos[1] - 1] = 0
 
